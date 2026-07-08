@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "showreel",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5173,
+      "autoPort": true
+    },
+    {
+      "name": "remote-design-jobs",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["remote-design-jobs/server.js"],
+      "port": 4321
+    }
+  ]
+}

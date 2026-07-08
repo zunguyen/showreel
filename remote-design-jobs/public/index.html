@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Remote Design Jobs</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --panel-2: #1e222b;
+    --text: #e8eaf0;
+    --muted: #9aa3b2;
+    --accent: #6ea8fe;
+    --green: #4ade80;
+    --amber: #fbbf24;
+    --border: #2a2f3a;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  h1 { font-size: 22px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  .chip {
+    border: 1px solid var(--border); background: var(--panel); color: var(--muted);
+    padding: 6px 14px; border-radius: 999px; cursor: pointer; font-size: 13px;
+    transition: all .15s;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--text); }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #0b1220; font-weight: 600; }
+  #search {
+    flex: 1; min-width: 180px; background: var(--panel); border: 1px solid var(--border);
+    color: var(--text); border-radius: 999px; padding: 7px 16px; font-size: 14px; outline: none;
+  }
+  #search:focus { border-color: var(--accent); }
+  #refresh {
+    background: var(--panel); border: 1px solid var(--border); color: var(--muted);
+    border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: 13px;
+  }
+  #refresh:hover { color: var(--text); border-color: var(--accent); }
+  #status { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  #status .err { color: var(--amber); }
+  .card {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 10px; transition: border-color .15s, transform .1s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .card .top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+  .card h3 { font-size: 15.5px; font-weight: 600; }
+  .card .company { color: var(--accent); font-size: 13.5px; margin-top: 2px; }
+  .card .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+  .badge {
+    font-size: 11.5px; padding: 2px 9px; border-radius: 999px;
+    background: var(--panel-2); border: 1px solid var(--border); color: var(--muted);
+  }
+  .badge.vietnam { color: #0b1220; background: var(--green); border-color: var(--green); font-weight: 600; }
+  .badge.apac { color: #0b1220; background: var(--amber); border-color: var(--amber); font-weight: 600; }
+  .badge.worldwide { color: #0b1220; background: var(--accent); border-color: var(--accent); font-weight: 600; }
+  .date { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+  .empty { color: var(--muted); text-align: center; padding: 48px 0; }
+  footer { margin-top: 28px; color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--border); padding-top: 14px; }
+  footer code { background: var(--panel-2); padding: 1px 6px; border-radius: 5px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🎨 Remote Design Jobs</h1>
+    <button id="refresh">↻ Refresh</button>
+  </header>
+  <p class="sub">Product design · UI/UX roles, remote-friendly for Vietnam / APAC / worldwide</p>
+
+  <div class="toolbar">
+    <button class="chip active" data-region="eligible">Vietnam-eligible</button>
+    <button class="chip" data-region="vietnam">Vietnam</button>
+    <button class="chip" data-region="apac">APAC</button>
+    <button class="chip" data-region="worldwide">Worldwide</button>
+    <button class="chip" data-region="all">All</button>
+    <input id="search" type="search" placeholder="Search title, company…" />
+  </div>
+
+  <div id="status">Loading jobs…</div>
+  <div id="list"></div>
+
+  <footer>
+    Sources are defined in <code>sources.json</code> — edit that file to add, remove, or
+    disable job boards, then hit Refresh. <span id="sourceList"></span>
+  </footer>
+</div>
+
+<script>
+let allJobs = [];
+let region = "eligible";
+let query = "";
+
+const REGION_LABEL = {
+  vietnam: "🇻🇳 Vietnam", apac: "🌏 APAC", worldwide: "🌍 Worldwide",
+  other: "Other region", unspecified: "Location n/a",
+};
+
+function timeAgo(iso) {
+  if (!iso) return "";
+  const d = (Date.now() - new Date(iso).getTime()) / 86400000;
+  if (d < 1) return "today";
+  if (d < 2) return "yesterday";
+  if (d < 30) return Math.floor(d) + "d ago";
+  return Math.floor(d / 30) + "mo ago";
+}
+
+function esc(s) {
+  return String(s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+function matches(job) {
+  if (region === "eligible" && !["vietnam", "apac", "worldwide"].includes(job.region)) return false;
+  if (["vietnam", "apac", "worldwide"].includes(region) && job.region !== region) return false;
+  if (query) {
+    const hay = (job.title + " " + job.company + " " + job.location + " " + (job.tags || []).join(" ")).toLowerCase();
+    if (!hay.includes(query)) return false;
+  }
+  return true;
+}
+
+function render() {
+  const list = document.getElementById("list");
+  const shown = allJobs.filter(matches);
+  if (!shown.length) {
+    list.innerHTML = '<div class="empty">No jobs match this filter. Try “All”, or add more sources to sources.json.</div>';
+    return;
+  }
+  list.innerHTML = shown.map((j) => `
+    <a class="card" href="${esc(j.url)}" target="_blank" rel="noopener">
+      <div class="top">
+        <div>
+          <h3>${esc(j.title)}</h3>
+          <div class="company">${esc(j.company || "—")}</div>
+        </div>
+        <span class="date">${timeAgo(j.date)}</span>
+      </div>
+      <div class="meta">
+        <span class="badge ${j.region}">${REGION_LABEL[j.region] || esc(j.region)}</span>
+        ${j.location ? `<span class="badge">${esc(j.location)}</span>` : ""}
+        <span class="badge">${esc(j.source)}</span>
+        ${j.salary ? `<span class="badge">💰 ${esc(j.salary)}</span>` : ""}
+      </div>
+    </a>`).join("");
+}
+
+async function load(force) {
+  const status = document.getElementById("status");
+  status.textContent = "Fetching jobs from sources…";
+  try {
+    const res = await fetch("/api/jobs" + (force ? "?refresh=1" : ""));
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    allJobs = data.jobs;
+    const errNote = data.errors.length
+      ? ` <span class="err">(failed: ${data.errors.map((e) => esc(e.source)).join(", ")})</span>` : "";
+    status.innerHTML = `${data.total} design jobs from ${data.sources.length} sources · updated ${timeAgo(data.fetchedAt) || "just now"}${errNote}`;
+    document.getElementById("sourceList").textContent = "Active: " + data.sources.join(", ") + ".";
+    render();
+  } catch (err) {
+    status.innerHTML = '<span class="err">Failed to load jobs: ' + esc(err.message) + "</span>";
+  }
+}
+
+document.querySelectorAll(".chip").forEach((chip) => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
+    chip.classList.add("active");
+    region = chip.dataset.region;
+    render();
+  });
+});
+document.getElementById("search").addEventListener("input", (e) => {
+  query = e.target.value.trim().toLowerCase();
+  render();
+});
+document.getElementById("refresh").addEventListener("click", () => load(true));
+
+load(false);
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+{
+  "roleKeywords": [
+    "product designer",
+    "product design",
+    "ux",
+    "ui",
+    "user experience",
+    "user interface",
+    "interaction designer",
+    "visual designer",
+    "web designer",
+    "digital designer",
+    "design lead",
+    "design manager",
+    "brand designer",
+    "graphic designer"
+  ],
+  "sources": [
+    {
+      "name": "Remotive",
+      "enabled": true,
+      "type": "json",
+      "url": "https://remotive.com/api/remote-jobs?category=design",
+      "map": {
+        "root": "jobs",
+        "title": "title",
+        "company": "company_name",
+        "location": "candidate_required_location",
+        "url": "url",
+        "date": "publication_date",
+        "tags": "tags",
+        "salary": "salary"
+      }
+    },
+    {
+      "name": "Jobicy",
+      "enabled": true,
+      "type": "json",
+      "url": "https://jobicy.com/api/v2/remote-jobs?industry=design&count=100",
+      "map": {
+        "root": "jobs",
+        "title": "jobTitle",
+        "company": "companyName",
+        "location": "jobGeo",
+        "url": "url",
+        "date": "pubDate",
+        "tags": "jobType",
+        "salary": ""
+      }
+    },
+    {
+      "name": "Remote OK",
+      "enabled": true,
+      "type": "json",
+      "url": "https://remoteok.com/api",
+      "map": {
+        "root": "",
+        "title": "position",
+        "company": "company",
+        "location": "location",
+        "url": "url",
+        "date": "date",
+        "tags": "tags",
+        "salary": ""
+      }
+    },
+    {
+      "name": "We Work Remotely",
+      "enabled": true,
+      "type": "rss",
+      "url": "https://weworkremotely.com/categories/remote-design-jobs.rss"
+    },
+    {
+      "name": "Working Nomads",
+      "enabled": true,
+      "type": "json",
+      "url": "https://www.workingnomads.com/api/exposed_jobs/",
+      "map": {
+        "root": "",
+        "title": "title",
+        "company": "company_name",
+        "location": "location",
+        "url": "url",
+        "date": "pub_date",
+        "tags": "tags",
+        "salary": ""
+      }
+    }
+  ]
+}
