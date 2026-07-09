@@ -1,4 +1,5 @@
 export type Ratio = '16:9' | '9:16' | '1:1' | '4:3' | '3:4';
+export type ProjectKind = 'showreel' | 'backdrop';
 export type TemplateId = 'slide' | 'rise' | 'fadezoom' | 'stack' | 'scroll';
 export type EasingId = 'linear' | 'easeInOut' | 'easeOutExpo' | 'easeOutBack' | 'spring';
 export type SlideDirection = 'left' | 'right' | 'up' | 'down';
@@ -7,6 +8,8 @@ export interface GradientStop {
   color: string;
   /** 0..1 position along the gradient line */
   pos: number;
+  /** 0..1 stop opacity; default 1 */
+  alpha?: number;
 }
 
 /** Soft radial glow layered over the linear base; coords/radius relative to canvas size. */
@@ -16,7 +19,15 @@ export interface GlowSpec {
   cx: number;
   cy: number;
   r: number;
+  /** x/y aspect of the orb ellipse; default 1 (round). ~3 gives aurora bands */
+  stretch?: number;
+  /** degrees, orientation of stretched orbs; default 0 */
+  rot?: number;
+  /** 0..1 how much this orb participates in animation drift; default 1 */
+  drift?: number;
 }
+
+export type GradientKind = 'linear' | 'radial' | 'angular' | 'diamond';
 
 export type BackgroundDoc =
   | { type: 'solid'; color: string }
@@ -26,8 +37,20 @@ export type BackgroundDoc =
       presetId: string | null;
       /** CSS convention: 0 = to top, 90 = to right, 180 = to bottom */
       angle: number;
+      /** default 'linear' */
+      gradientType?: GradientKind;
       stops: GradientStop[];
       glows?: GlowSpec[];
+      /** 0..2 master multiplier on glow alphas; default 1 */
+      glowIntensity?: number;
+      /** 0..1 mesh blur amount; default 0 */
+      softness?: number;
+      /** 0..1 film grain amount; default 0 */
+      grain?: number;
+      /** default false */
+      animate?: boolean;
+      /** 0..1 drift speed; default 0.35 */
+      animSpeed?: number;
     };
 
 export interface ItemDoc {
@@ -43,6 +66,8 @@ export interface ProjectDoc {
   version: 1;
   id: string;
   name: string;
+  /** 'backdrop' projects have no items; for them itemDurationMs is the loop length */
+  kind: ProjectKind;
   ratio: Ratio;
   template: TemplateId;
   easing: EasingId;
@@ -70,6 +95,7 @@ export interface ProjectDoc {
 export interface ProjectMeta {
   id: string;
   name: string;
+  kind: ProjectKind;
   updatedAt: number;
   itemCount: number;
 }
@@ -92,16 +118,18 @@ export const EASING_LABELS: Record<EasingId, string> = {
 
 export const RATIOS: Ratio[] = ['16:9', '9:16', '1:1', '4:3', '3:4'];
 
-/** Upgrades docs saved before the structured-background schema (bg: string). */
+/** Upgrades docs saved before the structured-background schema (bg: string) or the kind field. */
 export function migrateProject(raw: ProjectDoc): ProjectDoc {
   const legacy = raw as ProjectDoc & { bg?: unknown };
+  let doc = raw;
   if (!legacy.background) {
-    return {
-      ...raw,
+    doc = {
+      ...doc,
       background: { type: 'solid', color: typeof legacy.bg === 'string' ? legacy.bg : '#101418' },
     };
   }
-  return raw;
+  if (!doc.kind) doc = { ...doc, kind: 'showreel' };
+  return doc;
 }
 
 export function defaultProject(name: string): ProjectDoc {
@@ -110,6 +138,7 @@ export function defaultProject(name: string): ProjectDoc {
     version: 1,
     id: crypto.randomUUID(),
     name,
+    kind: 'showreel',
     ratio: '16:9',
     template: 'slide',
     easing: 'easeInOut',

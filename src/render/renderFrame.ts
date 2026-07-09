@@ -1,6 +1,6 @@
 import type { ProjectDoc } from '../types';
 import { easings } from './easing';
-import { getFrameState } from './timing';
+import { getFrameState, totalDurationMs } from './timing';
 import { scaleRect, type Ctx2D } from './draw';
 import { drawBackground } from './gradients';
 import { templates, type Slot } from './templates';
@@ -21,7 +21,7 @@ export function renderFrame(
   H: number,
 ) {
   ctx.save();
-  drawBackground(ctx, doc.background, W, H);
+  drawBackground(ctx, doc.background, W, H, tMs, doc.loop ? totalDurationMs(doc) : 0);
 
   const items = doc.items;
   if (items.length === 0) {

@@ -6,6 +6,7 @@ import { totalDurationMs } from '../render/timing';
 import { BASE_DIMS } from '../render/ratio';
 import { getBitmap } from '../assets';
 import { Button, Slider } from '../toolcraft/ui/components/primitives';
+import { CanvasGizmos } from './CanvasGizmos';
 
 function formatTime(ms: number): string {
   const s = Math.max(0, ms) / 1000;
@@ -49,6 +50,8 @@ function Transport() {
 export function Preview() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  // Backdrops loop on their own; a timeline scrubber adds nothing.
+  const isBackdrop = useStore((s) => s.doc?.kind === 'backdrop');
 
   useEffect(() => {
     let raf = 0;
@@ -62,7 +65,7 @@ export function Preview() {
       const { doc } = useStore.getState();
       const canvas = canvasRef.current;
       const wrap = wrapRef.current;
-      if (!doc || doc.items.length === 0 || !canvas || !wrap) return;
+      if (!doc || !canvas || !wrap) return;
 
       const pb = usePlayback.getState();
       const total = totalDurationMs(doc);
@@ -77,7 +80,13 @@ export function Preview() {
 
       const bounds = wrap.getBoundingClientRect();
       const base = BASE_DIMS[doc.ratio];
-      const fit = Math.min((bounds.width - 32) / base.w, (bounds.height - 32) / base.h);
+      // Backdrops reserve extra room for the gizmo bleed (see CanvasGizmos) so
+      // off-canvas handles aren't clipped by this container's overflow-hidden.
+      const bleed = doc.kind === 'backdrop' ? Math.min(base.w, base.h) * 0.06 : 0;
+      const fit = Math.min(
+        (bounds.width - 32) / (base.w + 2 * bleed),
+        (bounds.height - 32) / (base.h + 2 * bleed),
+      );
       if (fit <= 0) return;
       const dw = Math.max(2, Math.floor(base.w * fit));
       const dh = Math.max(2, Math.floor(base.h * fit));
@@ -103,9 +112,12 @@ export function Preview() {
   return (
     <section className="flex min-h-0 flex-col">
       <div ref={wrapRef} className="flex min-h-0 flex-1 items-center justify-center overflow-hidden">
-        <canvas ref={canvasRef} className="rounded-lg shadow-2xl" />
+        <div className="relative flex">
+          <canvas ref={canvasRef} className="rounded-lg shadow-2xl" />
+          {isBackdrop && <CanvasGizmos />}
+        </div>
       </div>
-      <Transport />
+      {!isBackdrop && <Transport />}
     </section>
   );
 }

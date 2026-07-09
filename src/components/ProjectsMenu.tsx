@@ -25,15 +25,22 @@ export function ProjectsMenu() {
         }
       />
       <DropdownMenuContent align="start" className="w-72">
-        <DropdownMenuItem onClick={() => newProject()}>＋ New project</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => newProject('showreel')}>＋ New showreel</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => newProject('backdrop')}>＋ New backdrop</DropdownMenuItem>
         {projects.length > 0 && <DropdownMenuSeparator />}
         {projects.map((m) => (
           <DropdownMenuItem key={m.id} className="group" onClick={() => void openProject(m.id)}>
             {m.id === doc?.id && <span className="text-[color:var(--accent)]">●</span>}
             <span className="flex-1 truncate">{m.name || 'Untitled reel'}</span>
-            <span className="text-2xs text-[color:var(--muted-foreground)]">
-              {m.itemCount} {m.itemCount === 1 ? 'screen' : 'screens'}
-            </span>
+            {m.kind === 'backdrop' ? (
+              <span className="rounded-sm border border-[color:color-mix(in_oklab,var(--border)_30%,transparent)] px-1 text-2xs text-[color:var(--muted-foreground)]">
+                backdrop
+              </span>
+            ) : (
+              <span className="text-2xs text-[color:var(--muted-foreground)]">
+                {m.itemCount} {m.itemCount === 1 ? 'screen' : 'screens'}
+              </span>
+            )}
             <span
               role="button"
               tabIndex={-1}

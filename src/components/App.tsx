@@ -5,7 +5,9 @@ import { Button, Input } from '../toolcraft/ui/components/primitives';
 import { MediaRail } from './MediaRail';
 import { Preview } from './Preview';
 import { Inspector } from './Inspector';
+import { BackdropInspector } from './BackdropInspector';
 import { ExportModal } from './ExportModal';
+import { BackdropExportModal } from './BackdropExportModal';
 import { EmptyState } from './EmptyState';
 import { ProjectsMenu } from './ProjectsMenu';
 
@@ -39,7 +41,9 @@ export default function App() {
     );
   }
 
+  const isBackdrop = doc?.kind === 'backdrop';
   const hasItems = !!doc && doc.items.length > 0;
+  const canExport = isBackdrop || hasItems;
 
   return (
     <div className="flex h-screen flex-col bg-[color:var(--background)] text-[color:var(--foreground)]">
@@ -55,12 +59,17 @@ export default function App() {
           />
         )}
         <div className="flex-1" />
-        <Button disabled={!hasItems} onClick={() => setExportOpen(true)}>
+        <Button disabled={!canExport} onClick={() => setExportOpen(true)}>
           Export
         </Button>
       </header>
 
-      {hasItems ? (
+      {isBackdrop ? (
+        <main className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_300px]">
+          <Preview />
+          <BackdropInspector />
+        </main>
+      ) : hasItems ? (
         <main className="grid min-h-0 flex-1 grid-cols-[190px_minmax(0,1fr)_300px]">
           <MediaRail />
           <Preview />
@@ -70,7 +79,13 @@ export default function App() {
         <EmptyState />
       )}
 
-      {exportOpen && doc && <ExportModal doc={doc} onClose={() => setExportOpen(false)} />}
+      {exportOpen &&
+        doc &&
+        (isBackdrop ? (
+          <BackdropExportModal doc={doc} onClose={() => setExportOpen(false)} />
+        ) : (
+          <ExportModal doc={doc} onClose={() => setExportOpen(false)} />
+        ))}
     </div>
   );
 }

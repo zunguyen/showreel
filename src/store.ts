@@ -1,5 +1,13 @@
 import { create } from 'zustand';
-import { defaultProject, migrateProject, type ItemDoc, type ProjectDoc, type ProjectMeta } from './types';
+import {
+  defaultProject,
+  migrateProject,
+  type ItemDoc,
+  type ProjectDoc,
+  type ProjectKind,
+  type ProjectMeta,
+} from './types';
+import { GRADIENT_PRESETS, presetToBackground } from './render/gradients';
 import * as storage from './storage';
 import { clearAssetCache, evictAsset, loadIntoCache } from './assets';
 import { usePlayback } from './playback';
@@ -27,7 +35,7 @@ interface StoreState {
   addFiles: (files: File[]) => Promise<AddResult>;
   removeItem: (itemId: string) => void;
   reorderItems: (from: number, to: number) => void;
-  newProject: () => void;
+  newProject: (kind?: ProjectKind) => void;
   openProject: (id: string) => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
 }
@@ -42,7 +50,24 @@ function scheduleSave(doc: ProjectDoc) {
 }
 
 function toMeta(doc: ProjectDoc): ProjectMeta {
-  return { id: doc.id, name: doc.name, updatedAt: doc.updatedAt, itemCount: doc.items.length };
+  return {
+    id: doc.id,
+    name: doc.name,
+    kind: doc.kind ?? 'showreel',
+    updatedAt: doc.updatedAt,
+    itemCount: doc.items.length,
+  };
+}
+
+function defaultBackdrop(): ProjectDoc {
+  const preset = GRADIENT_PRESETS.find((p) => p.id === 'pastel-mesh') ?? GRADIENT_PRESETS[0];
+  return {
+    ...defaultProject('Untitled backdrop'),
+    kind: 'backdrop',
+    background: presetToBackground(preset),
+    // loop length for animated backdrops (there is exactly one "item slot")
+    itemDurationMs: 10_000,
+  };
 }
 
 function upsertMeta(metas: ProjectMeta[], doc: ProjectDoc): ProjectMeta[] {
@@ -169,12 +194,12 @@ export const useStore = create<StoreState>()((set, get) => ({
     get().updateDoc({ items });
   },
 
-  newProject: () => {
+  newProject: (kind = 'showreel') => {
     const current = get().doc;
     if (current) storage.putProject(current).catch(() => {});
     clearAssetCache();
     usePlayback.setState({ timeMs: 0 });
-    const doc = defaultProject('Untitled reel');
+    const doc = kind === 'backdrop' ? defaultBackdrop() : defaultProject('Untitled reel');
     scheduleSave(doc);
     set({
       doc,

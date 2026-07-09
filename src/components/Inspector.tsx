@@ -1,5 +1,4 @@
 import { useStore } from '../store';
-import { GRADIENT_PRESETS, cssGradient, presetToBackground } from '../render/gradients';
 import {
   EASING_LABELS,
   RATIOS,
@@ -10,15 +9,13 @@ import {
   type TemplateId,
 } from '../types';
 import {
-  ColorControl,
   SegmentedControl,
   SelectControl,
   SliderControl,
   SwitchControl,
 } from '../toolcraft/ui/components/controls';
 import { Separator } from '../toolcraft/ui/components/primitives';
-
-const SWATCHES = ['#101418', '#09090b', '#1e1b4b', '#052e16', '#450a0a', '#f4f4f5', '#e8e2d9', '#dbeafe'];
+import { BackgroundSection } from './BackgroundControls';
 
 const DIRECTION_OPTIONS: { label: string; value: SlideDirection }[] = [
   { label: '←', value: 'left' },
@@ -27,12 +24,9 @@ const DIRECTION_OPTIONS: { label: string; value: SlideDirection }[] = [
   { label: '↓', value: 'down' },
 ];
 
-const normHex = (c: string) => (c.startsWith('#') ? c : `#${c}`);
-
 export function Inspector() {
   const doc = useStore((s) => s.doc)!;
   const up = useStore((s) => s.updateDoc);
-  const bg = doc.background;
 
   return (
     <aside className="toolcraft-panel-surface flex min-h-0 flex-col gap-4 overflow-y-auto border-l border-[color:color-mix(in_oklab,var(--border)_12%,transparent)] px-3 py-4">
@@ -123,100 +117,7 @@ export function Inspector() {
 
       <Separator />
 
-      <SegmentedControl
-        name="Background"
-        options={[
-          { label: 'Solid', value: 'solid' },
-          { label: 'Gradient', value: 'gradient' },
-        ]}
-        value={bg.type}
-        onValueChange={(mode) => {
-          if (bg.type === mode) return;
-          up({
-            background:
-              mode === 'solid'
-                ? { type: 'solid', color: '#101418' }
-                : presetToBackground(GRADIENT_PRESETS[0]),
-          });
-        }}
-      />
-
-      {bg.type === 'solid' ? (
-        <div className="flex flex-col gap-2">
-          <ColorControl
-            name="Color"
-            hex={bg.color}
-            onValueChange={(v) => up({ background: { type: 'solid', color: normHex(v.hex) } })}
-          />
-          <div className="flex flex-wrap items-center gap-2">
-            {SWATCHES.map((c) => (
-              <button
-                key={c}
-                onClick={() => up({ background: { type: 'solid', color: c } })}
-                style={{ backgroundColor: c }}
-                title={c}
-                className={`h-5 w-5 rounded-full border ${
-                  bg.color === c
-                    ? 'border-[color:var(--accent)]'
-                    : 'border-[color:color-mix(in_oklab,var(--border)_25%,transparent)]'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-4 gap-2">
-            {GRADIENT_PRESETS.map((p) => (
-              <button
-                key={p.id}
-                title={p.name}
-                onClick={() => up({ background: presetToBackground(p) })}
-                style={{ background: cssGradient(presetToBackground(p)) }}
-                className={`h-9 rounded-md border ${
-                  bg.presetId === p.id
-                    ? 'border-[color:var(--accent)] ring-1 ring-[color:var(--accent)]'
-                    : 'border-[color:color-mix(in_oklab,var(--border)_12%,transparent)] hover:border-[color:color-mix(in_oklab,var(--border)_40%,transparent)]'
-                }`}
-              />
-            ))}
-          </div>
-          <SliderControl
-            name="Angle"
-            unit="°"
-            min={0}
-            max={360}
-            step={5}
-            showFill
-            value={bg.angle}
-            onValueChange={(v) => up({ background: { ...bg, angle: v, presetId: null } })}
-          />
-          <ColorControl
-            inputs={[
-              {
-                name: 'From',
-                hex: bg.stops[0].color,
-                onValueChange: (v) => {
-                  const stops = bg.stops.map((s, si) =>
-                    si === 0 ? { ...s, color: normHex(v.hex) } : s,
-                  );
-                  up({ background: { type: 'gradient', presetId: null, angle: bg.angle, stops } });
-                },
-              },
-              {
-                name: 'To',
-                hex: bg.stops[bg.stops.length - 1].color,
-                onValueChange: (v) => {
-                  const stops = bg.stops.map((s, si) =>
-                    si === bg.stops.length - 1 ? { ...s, color: normHex(v.hex) } : s,
-                  );
-                  up({ background: { type: 'gradient', presetId: null, angle: bg.angle, stops } });
-                },
-              },
-            ]}
-          />
-        </>
-      )}
+      <BackgroundSection bg={doc.background} up={up} />
 
       <SliderControl
         name="Padding"
