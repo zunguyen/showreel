@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import { MoonIcon, SunIcon } from '@phosphor-icons/react';
 import { useStore } from '../store';
 import { usePlayback } from '../playback';
+import { appliedTheme, subscribeTheme, toggleTheme } from '../theme';
 import { Button, Input } from '../toolcraft/ui/components/primitives';
 import { MediaRail } from './MediaRail';
 import { Preview } from './Preview';
@@ -16,6 +18,7 @@ export default function App() {
   const doc = useStore((s) => s.doc);
   const updateDoc = useStore((s) => s.updateDoc);
   const [exportOpen, setExportOpen] = useState(false);
+  const theme = useSyncExternalStore(subscribeTheme, appliedTheme);
 
   useEffect(() => {
     void useStore.getState().init();
@@ -59,6 +62,15 @@ export default function App() {
           />
         )}
         <div className="flex-1" />
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          onClick={toggleTheme}
+        >
+          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+        </Button>
         <Button disabled={!canExport} onClick={() => setExportOpen(true)}>
           Export
         </Button>
