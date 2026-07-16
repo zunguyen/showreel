@@ -104,7 +104,7 @@ function DropdownMenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "group/dropdown-menu-item relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md px-2 py-1 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--accent-foreground)] not-data-[variant=destructive]:focus:**:text-[color:var(--accent-foreground)] data-inset:pl-7.5 data-[variant=destructive]:text-[color:var(--destructive)] data-[variant=destructive]:hover:bg-[color:color-mix(in_oklab,var(--destructive)_10%,transparent)] data-[variant=destructive]:focus:bg-[color:color-mix(in_oklab,var(--destructive)_10%,transparent)] data-[variant=destructive]:focus:text-[color:var(--destructive)] data-[variant=destructive]:[&_[data-slot=dropdown-menu-shortcut]]:text-[color:var(--destructive)] data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5 data-[variant=destructive]:*:[svg]:text-[color:var(--destructive)]",
+        "group/dropdown-menu-item relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md px-2 py-1 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--foreground)] not-data-[variant=destructive]:focus:**:text-[color:var(--foreground)] data-inset:pl-7.5 data-[variant=destructive]:text-[color:var(--destructive)] data-[variant=destructive]:hover:bg-[color:color-mix(in_oklab,var(--destructive)_10%,transparent)] data-[variant=destructive]:focus:bg-[color:color-mix(in_oklab,var(--destructive)_10%,transparent)] data-[variant=destructive]:focus:text-[color:var(--destructive)] data-[variant=destructive]:[&_[data-slot=dropdown-menu-shortcut]]:text-[color:var(--destructive)] data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5 data-[variant=destructive]:*:[svg]:text-[color:var(--destructive)]",
         className,
       )}
       {...props}
@@ -129,7 +129,7 @@ function DropdownMenuSubTrigger({
       data-slot="dropdown-menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "flex min-h-7 cursor-pointer items-center gap-2 rounded-md px-2 py-1 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--accent-foreground)] not-data-[variant=destructive]:focus:**:text-[color:var(--accent-foreground)] data-inset:pl-7.5 data-popup-open:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] data-popup-open:text-[color:var(--accent-foreground)] data-open:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] data-open:text-[color:var(--accent-foreground)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "flex min-h-7 cursor-pointer items-center gap-2 rounded-md px-2 py-1 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--foreground)] not-data-[variant=destructive]:focus:**:text-[color:var(--foreground)] data-inset:pl-7.5 data-popup-open:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] data-popup-open:text-[color:var(--foreground)] data-open:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] data-open:text-[color:var(--foreground)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}
@@ -175,7 +175,7 @@ function DropdownMenuCheckboxItem({
       data-slot="dropdown-menu-checkbox-item"
       data-inset={inset}
       className={cn(
-        "relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--accent-foreground)] focus:**:text-[color:var(--accent-foreground)] data-inset:pl-7.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--foreground)] focus:**:text-[color:var(--foreground)] data-inset:pl-7.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       checked={checked}
@@ -216,7 +216,7 @@ function DropdownMenuRadioItem({
       data-slot="dropdown-menu-radio-item"
       data-inset={inset}
       className={cn(
-        "relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--accent-foreground)] focus:**:text-[color:var(--accent-foreground)] data-inset:pl-7.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--foreground)] focus:**:text-[color:var(--foreground)] data-inset:pl-7.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}
@@ -255,7 +255,7 @@ function DropdownMenuShortcut({
     <span
       data-slot="dropdown-menu-shortcut"
       className={cn(
-        "ml-auto text-[0.625rem] tracking-widest text-[color:var(--muted-foreground)] group-focus/dropdown-menu-item:text-[color:var(--accent-foreground)]",
+        "ml-auto text-[0.625rem] tracking-widest text-[color:var(--muted-foreground)] group-focus/dropdown-menu-item:text-[color:var(--foreground)]",
         className,
       )}
       {...props}

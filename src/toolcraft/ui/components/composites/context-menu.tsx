@@ -93,7 +93,7 @@ function ContextMenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "group/context-menu-item relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md px-2 py-1 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--accent-foreground)] not-data-[variant=destructive]:focus:**:text-[color:var(--accent-foreground)] data-inset:pl-7.5 data-[variant=destructive]:text-[color:var(--destructive)] data-[variant=destructive]:hover:bg-[color:color-mix(in_oklab,var(--destructive)_10%,transparent)] data-[variant=destructive]:focus:bg-[color:color-mix(in_oklab,var(--destructive)_10%,transparent)] data-[variant=destructive]:focus:text-[color:var(--destructive)] data-[variant=destructive]:[&_[data-slot=context-menu-shortcut]]:text-[color:var(--destructive)] data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5 data-[variant=destructive]:*:[svg]:text-[color:var(--destructive)]",
+        "group/context-menu-item relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md px-2 py-1 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--foreground)] not-data-[variant=destructive]:focus:**:text-[color:var(--foreground)] data-inset:pl-7.5 data-[variant=destructive]:text-[color:var(--destructive)] data-[variant=destructive]:hover:bg-[color:color-mix(in_oklab,var(--destructive)_10%,transparent)] data-[variant=destructive]:focus:bg-[color:color-mix(in_oklab,var(--destructive)_10%,transparent)] data-[variant=destructive]:focus:text-[color:var(--destructive)] data-[variant=destructive]:[&_[data-slot=context-menu-shortcut]]:text-[color:var(--destructive)] data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5 data-[variant=destructive]:*:[svg]:text-[color:var(--destructive)]",
         className,
       )}
       {...props}
@@ -118,7 +118,7 @@ function ContextMenuSubTrigger({
       data-slot="context-menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "flex min-h-7 cursor-pointer items-center gap-2 rounded-md px-2 py-1 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--accent-foreground)] not-data-[variant=destructive]:focus:**:text-[color:var(--accent-foreground)] data-inset:pl-7.5 data-open:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] data-open:text-[color:var(--accent-foreground)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "flex min-h-7 cursor-pointer items-center gap-2 rounded-md px-2 py-1 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--foreground)] not-data-[variant=destructive]:focus:**:text-[color:var(--foreground)] data-inset:pl-7.5 data-open:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] data-open:text-[color:var(--foreground)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}
@@ -157,7 +157,7 @@ function ContextMenuCheckboxItem({
       data-slot="context-menu-checkbox-item"
       data-inset={inset}
       className={cn(
-        "relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--accent-foreground)] focus:**:text-[color:var(--accent-foreground)] data-inset:pl-7.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--foreground)] focus:**:text-[color:var(--foreground)] data-inset:pl-7.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       checked={checked}
@@ -190,7 +190,7 @@ function ContextMenuRadioItem({
       data-slot="context-menu-radio-item"
       data-inset={inset}
       className={cn(
-        "relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--accent-foreground)] focus:**:text-[color:var(--accent-foreground)] data-inset:pl-7.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "relative flex min-h-7 cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none hover:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] focus:text-[color:var(--foreground)] focus:**:text-[color:var(--foreground)] data-inset:pl-7.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}
@@ -220,7 +220,7 @@ function ContextMenuShortcut({ className, ...props }: React.ComponentProps<"span
     <span
       data-slot="context-menu-shortcut"
       className={cn(
-        "ml-auto text-[0.625rem] tracking-widest text-[color:color-mix(in_oklab,var(--foreground)_60%,transparent)] group-focus/context-menu-item:text-[color:var(--accent-foreground)]",
+        "ml-auto text-[0.625rem] tracking-widest text-[color:color-mix(in_oklab,var(--foreground)_60%,transparent)] group-focus/context-menu-item:text-[color:var(--foreground)]",
         className,
       )}
       {...props}

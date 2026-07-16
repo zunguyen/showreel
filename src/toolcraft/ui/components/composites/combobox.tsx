@@ -276,7 +276,7 @@ function ComboboxItem({
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
       className={cn(
-        "relative flex min-h-7 w-full min-w-0 cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none data-highlighted:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] data-highlighted:text-[color:var(--accent-foreground)] not-data-[variant=destructive]:data-highlighted:**:text-[color:var(--accent-foreground)] data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "relative flex min-h-7 w-full min-w-0 cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 popup-text-xs-plus leading-normal tracking-tight font-medium outline-hidden select-none data-highlighted:bg-[color:color-mix(in_oklab,var(--foreground)_5%,transparent)] data-highlighted:text-[color:var(--foreground)] not-data-[variant=destructive]:data-highlighted:**:text-[color:var(--foreground)] data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}
