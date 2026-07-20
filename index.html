@@ -10,7 +10,7 @@
         try {
           t = localStorage.getItem('showreel-theme');
         } catch {}
-        const dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+        const dark = t !== 'light';
         document.documentElement.classList.toggle('dark', dark);
       })();
     </script>

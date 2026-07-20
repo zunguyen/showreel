@@ -1,4 +1,5 @@
 import { useStore } from '../store';
+import { PlusIcon, XIcon } from '@phosphor-icons/react';
 import { Button } from '../toolcraft/ui/components/primitives';
 import {
   DropdownMenu,
@@ -25,8 +26,12 @@ export function ProjectsMenu() {
         }
       />
       <DropdownMenuContent align="start" className="w-72">
-        <DropdownMenuItem onClick={() => newProject('showreel')}>＋ New showreel</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => newProject('backdrop')}>＋ New backdrop</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => newProject('showreel')}>
+          <PlusIcon /> New showreel
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => newProject('backdrop')}>
+          <PlusIcon /> New backdrop
+        </DropdownMenuItem>
         {projects.length > 0 && <DropdownMenuSeparator />}
         {projects.map((m) => (
           <DropdownMenuItem key={m.id} className="group" onClick={() => void openProject(m.id)}>
@@ -54,7 +59,7 @@ export function ProjectsMenu() {
               }}
               className="hidden px-1 text-[color:var(--muted-foreground)] group-hover:inline hover:text-[color:var(--destructive)]"
             >
-              ✕
+              <XIcon size={12} />
             </span>
           </DropdownMenuItem>
         ))}

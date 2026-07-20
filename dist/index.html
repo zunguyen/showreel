@@ -4,8 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Showreel — design screens to video</title>
-    <script type="module" crossorigin src="/assets/index-Du5wcyRY.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DEE6j9eF.css">
+    <script>
+      (() => {
+        let t = null;
+        try {
+          t = localStorage.getItem('showreel-theme');
+        } catch {}
+        const dark = t !== 'light';
+        document.documentElement.classList.toggle('dark', dark);
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-B-MO4oqw.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CQTJtyG8.css">
   </head>
   <body>
     <div id="root"></div>

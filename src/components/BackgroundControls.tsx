@@ -10,6 +10,7 @@ import {
 } from '../toolcraft/ui/components/controls';
 import type { GradientStop as TcGradientStop } from '../toolcraft/ui/components/controls/control-types';
 import { Button } from '../toolcraft/ui/components/primitives';
+import { ArrowsClockwiseIcon } from '@phosphor-icons/react';
 
 const SWATCHES = ['#101418', '#09090b', '#1e1b4b', '#052e16', '#450a0a', '#f4f4f5', '#e8e2d9', '#dbeafe'];
 
@@ -105,7 +106,7 @@ function GradientEditor({ bg, up }: { bg: GradientBg; up: (patch: Partial<Projec
           })
         }
       >
-        ⇄ Reverse stops
+        <ArrowsClockwiseIcon /> Reverse stops
       </Button>
 
       {glows.length > 0 && (

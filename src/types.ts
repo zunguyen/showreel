@@ -1,8 +1,35 @@
 export type Ratio = '16:9' | '9:16' | '1:1' | '4:3' | '3:4';
 export type ProjectKind = 'showreel' | 'backdrop';
-export type TemplateId = 'slide' | 'rise' | 'fadezoom' | 'stack' | 'scroll';
+export type TemplateId =
+  | 'slide'
+  | 'rise'
+  | 'fadezoom'
+  | 'scroll'
+  | 'carousel'
+  | 'orbit'
+  | 'stack'
+  | 'depth3d'
+  | 'wheel'
+  | 'field'
+  | 'wipe'
+  | 'stories'
+  | 'spin'
+  | 'flicker'
+  | 'globe'
+  | 'carousel3d'
+  | 'grid'
+  | 'spiral';
 export type EasingId = 'linear' | 'easeInOut' | 'easeOutExpo' | 'easeOutBack' | 'spring';
 export type SlideDirection = 'left' | 'right' | 'up' | 'down';
+
+export interface TemplatePresentation {
+  id: TemplateId;
+  label: string;
+  description: string;
+  category: 'Core' | 'Spatial' | 'Transitions';
+  /** Representative point in the template animation used for reduced-motion thumbnails. */
+  previewTimeMs: number;
+}
 
 export interface GradientStop {
   color: string;
@@ -87,6 +114,8 @@ export interface ProjectDoc {
   scrollHoldMs: number;
   /** degrees, stack template card rotation */
   stackRotation: number;
+  /** 0..1 shared strength for spatial and experimental motion templates */
+  motionIntensity: number;
   items: ItemDoc[];
   createdAt: number;
   updatedAt: number;
@@ -104,9 +133,67 @@ export const TEMPLATE_LABELS: Record<TemplateId, string> = {
   slide: 'Slide',
   rise: 'Rise',
   fadezoom: 'Fade & Zoom',
-  stack: 'Stack',
   scroll: 'Scroll',
+  carousel: 'Carousel',
+  orbit: 'Orbit',
+  stack: 'Stack',
+  depth3d: '3D',
+  wheel: 'Wheel',
+  field: 'Field',
+  wipe: 'Wipe',
+  stories: 'Stories',
+  spin: 'Spin',
+  flicker: 'Flicker',
+  globe: 'Globe',
+  carousel3d: 'Carousel 3D',
+  grid: 'Grid',
+  spiral: 'Spiral',
 };
+
+export const TEMPLATE_PRESENTATIONS: readonly TemplatePresentation[] = [
+  {
+    id: 'slide',
+    label: 'Slide',
+    description: 'Clean screen-to-screen walkthroughs',
+    category: 'Core',
+    previewTimeMs: 900,
+  },
+  {
+    id: 'rise',
+    label: 'Rise',
+    description: 'Mobile screens and product reveals',
+    category: 'Core',
+    previewTimeMs: 1050,
+  },
+  {
+    id: 'fadezoom',
+    label: 'Fade & Zoom',
+    description: 'Calm, cinematic case studies',
+    category: 'Core',
+    previewTimeMs: 1200,
+  },
+  {
+    id: 'scroll',
+    label: 'Scroll',
+    description: 'Full-page websites and tall designs',
+    category: 'Core',
+    previewTimeMs: 1350,
+  },
+  { id: 'carousel', label: 'Carousel', description: 'Editorial image sequences', category: 'Spatial', previewTimeMs: 2050 },
+  { id: 'orbit', label: 'Orbit', description: 'Images circling in depth', category: 'Spatial', previewTimeMs: 2050 },
+  { id: 'stack', label: 'Stack', description: 'Layered visual collections', category: 'Spatial', previewTimeMs: 2050 },
+  { id: 'depth3d', label: '3D', description: 'Dimensional panel turns', category: 'Spatial', previewTimeMs: 2050 },
+  { id: 'wheel', label: 'Wheel', description: 'Radial image rotation', category: 'Spatial', previewTimeMs: 2050 },
+  { id: 'field', label: 'Field', description: 'Floating image landscape', category: 'Spatial', previewTimeMs: 2050 },
+  { id: 'globe', label: 'Globe', description: 'Spherical image orbit', category: 'Spatial', previewTimeMs: 2050 },
+  { id: 'carousel3d', label: 'Carousel 3D', description: 'Perspective cover flow', category: 'Spatial', previewTimeMs: 2050 },
+  { id: 'grid', label: 'Grid', description: 'Modular gallery movement', category: 'Spatial', previewTimeMs: 2050 },
+  { id: 'spiral', label: 'Spiral', description: 'Images coil into focus', category: 'Spatial', previewTimeMs: 2050 },
+  { id: 'wipe', label: 'Wipe', description: 'Directional image reveal', category: 'Transitions', previewTimeMs: 2050 },
+  { id: 'stories', label: 'Stories', description: 'Vertical social sequence', category: 'Transitions', previewTimeMs: 2050 },
+  { id: 'spin', label: 'Spin', description: 'Rotating image handoff', category: 'Transitions', previewTimeMs: 2050 },
+  { id: 'flicker', label: 'Flicker', description: 'Fast editorial flashes', category: 'Transitions', previewTimeMs: 2050 },
+];
 
 export const EASING_LABELS: Record<EasingId, string> = {
   linear: 'Linear',
@@ -129,6 +216,7 @@ export function migrateProject(raw: ProjectDoc): ProjectDoc {
     };
   }
   if (!doc.kind) doc = { ...doc, kind: 'showreel' };
+  if (doc.motionIntensity === undefined) doc = { ...doc, motionIntensity: 0.65 };
   return doc;
 }
 
@@ -153,6 +241,7 @@ export function defaultProject(name: string): ProjectDoc {
     slideDirection: 'left',
     scrollHoldMs: 500,
     stackRotation: 4,
+    motionIntensity: 0.65,
     items: [],
     createdAt: now,
     updatedAt: now,
