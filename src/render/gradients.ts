@@ -9,11 +9,15 @@ export interface GradientPreset {
   name: string;
   angle: number;
   gradientType?: GradientKind;
+  radialX?: number;
+  radialY?: number;
+  radialSize?: number;
   stops: GradientStop[];
   glows?: GlowSpec[];
   glowIntensity?: number;
   softness?: number;
   grain?: number;
+  grainSize?: number;
   animate?: boolean;
   animSpeed?: number;
 }
@@ -31,6 +35,25 @@ export const GRADIENT_PRESETS: GradientPreset[] = [
     ],
     glows: [{ color: '#e85a3f', alpha: 0.4, cx: 0.5, cy: 1.05, r: 0.6 }],
     grain: 0.3,
+  },
+  {
+    id: 'arc',
+    name: 'Arc',
+    angle: 180,
+    gradientType: 'radial',
+    radialX: 0.5,
+    radialY: 0.05,
+    radialSize: 1.5,
+    stops: [
+      { color: '#1C2D9C', pos: 0 },
+      { color: '#1C2D9C', pos: 0.3 },
+      { color: '#1EBEB8', pos: 0.53 },
+      { color: '#145A50', pos: 0.72 },
+      { color: '#ECF2F1', pos: 1 },
+    ],
+    softness: 0.07,
+    grain: 0.18,
+    grainSize: 1,
   },
   {
     id: 'golden-hour',
@@ -362,11 +385,15 @@ export function presetToBackground(preset: GradientPreset): BackgroundDoc {
     presetId: preset.id,
     angle: preset.angle,
     gradientType: preset.gradientType,
+    radialX: preset.radialX,
+    radialY: preset.radialY,
+    radialSize: preset.radialSize,
     stops: preset.stops.map((s) => ({ ...s })),
     glows: preset.glows?.map((g) => ({ ...g })),
     glowIntensity: preset.glowIntensity,
     softness: preset.softness,
     grain: preset.grain,
+    grainSize: preset.grainSize,
     animate: preset.animate,
     animSpeed: preset.animSpeed,
   };
@@ -460,7 +487,10 @@ function drawCore(ctx: Ctx2D, bg: GradientBg, W: number, H: number, tMs: number,
   } else {
     let grad: CanvasGradient;
     if (kind === 'radial') {
-      grad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.hypot(W, H) / 2);
+      const cx = (bg.radialX ?? 0.5) * W;
+      const cy = (bg.radialY ?? 0.5) * H;
+      const radius = Math.max(1, (Math.hypot(W, H) / 2) * (bg.radialSize ?? 1));
+      grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
     } else if (kind === 'angular') {
       // CSS conic convention: starts at 12 o'clock; canvas starts at 3 o'clock.
       grad = ctx.createConicGradient(((bg.angle - 90) * Math.PI) / 180, W / 2, H / 2);
@@ -531,13 +561,18 @@ function paintGradient(ctx: Ctx2D, bg: GradientBg, W: number, H: number, tMs: nu
       ctx.globalCompositeOperation = 'overlay';
       ctx.globalAlpha = grain * 0.45;
       // Resolution-relative grit so 720p export matches the 1080-class preview.
-      const s = Math.max(0.25, Math.min(W, H) / 1080);
+      const grainSize = Math.max(1, bg.grainSize ?? 1);
+      const s = Math.max(0.25, (Math.min(W, H) / 1080) * grainSize);
       ctx.scale(s, s);
       ctx.fillStyle = pattern;
       ctx.fillRect(0, 0, W / s, H / s);
       ctx.restore();
     }
   }
+}
+
+export function isAnimatedBackground(bg: BackgroundDoc): boolean {
+  return bg.type === 'gradient' && (bg.animate ?? false);
 }
 
 /** Fills the full canvas with the background. Pure in (bg, W, H, tMs, loopMs); identical in preview and export. */
@@ -547,7 +582,7 @@ export function drawBackground(ctx: Ctx2D, bg: BackgroundDoc, W: number, H: numb
     ctx.fillRect(0, 0, W, H);
     return;
   }
-  if (!bg.animate) {
+  if (!isAnimatedBackground(bg)) {
     // Static backgrounds render once and blit thereafter (preview redraws at 60fps).
     const key = `${W}x${H}|${JSON.stringify(bg)}`;
     if (staticCache?.key !== key) {
@@ -581,7 +616,10 @@ export function cssGradient(bg: BackgroundDoc): string {
     .join(', ');
   const kind = bg.gradientType ?? 'linear';
   if (kind === 'radial') {
-    layers.push(`radial-gradient(circle at 50% 50%, ${stops})`);
+    const x = Math.round((bg.radialX ?? 0.5) * 100);
+    const y = Math.round((bg.radialY ?? 0.5) * 100);
+    const size = Math.round((bg.radialSize ?? 1) * 70);
+    layers.push(`radial-gradient(circle ${size}% at ${x}% ${y}%, ${stops})`);
   } else if (kind === 'angular') {
     layers.push(`conic-gradient(from ${bg.angle}deg at 50% 50%, ${stops})`);
   } else if (kind === 'diamond') {

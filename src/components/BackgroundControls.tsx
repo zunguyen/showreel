@@ -1,6 +1,11 @@
 import { GRADIENT_PRESETS, cssGradient, presetToBackground } from '../render/gradients';
 import { useEditorUi } from '../editorUi';
-import type { BackgroundDoc, GlowSpec, GradientStop, ProjectDoc } from '../types';
+import {
+  type BackgroundDoc,
+  type GlowSpec,
+  type GradientStop,
+  type ProjectDoc,
+} from '../types';
 import {
   ColorControl,
   GradientControl,
@@ -72,6 +77,7 @@ function GradientEditor({ bg, up }: { bg: GradientBg; up: (patch: Partial<Projec
         {GRADIENT_PRESETS.map((p) => (
           <button
             key={p.id}
+            aria-label={p.name}
             title={p.name}
             onClick={() => up({ background: presetToBackground(p) })}
             style={{ background: cssGradient(presetToBackground(p)) }}
@@ -97,6 +103,43 @@ function GradientEditor({ bg, up }: { bg: GradientBg; up: (patch: Partial<Projec
           })
         }
       />
+      {(bg.gradientType ?? 'linear') === 'radial' && (
+        <div className="flex flex-col gap-4 border-y border-[color:var(--hairline)] py-4">
+          <p className="text-2xs font-semibold uppercase tracking-[0.11em] text-[color:var(--muted-foreground)]">
+            Radial geometry
+          </p>
+          <SliderControl
+            name="Center X"
+            unit="%"
+            min={-20}
+            max={120}
+            step={1}
+            showFill
+            value={Math.round((bg.radialX ?? 0.5) * 100)}
+            onValueChange={(value) => patchBg({ radialX: value / 100 })}
+          />
+          <SliderControl
+            name="Center Y"
+            unit="%"
+            min={-20}
+            max={120}
+            step={1}
+            showFill
+            value={Math.round((bg.radialY ?? 0.5) * 100)}
+            onValueChange={(value) => patchBg({ radialY: value / 100 })}
+          />
+          <SliderControl
+            name="Size"
+            unit="%"
+            min={25}
+            max={200}
+            step={1}
+            showFill
+            value={Math.round((bg.radialSize ?? 1) * 100)}
+            onValueChange={(value) => patchBg({ radialSize: value / 100 })}
+          />
+        </div>
+      )}
       <Button
         variant="outline"
         size="sm"
@@ -132,7 +175,7 @@ function GradientEditor({ bg, up }: { bg: GradientBg; up: (patch: Partial<Projec
         onValueChange={(v) => patchBg({ softness: v / 100 })}
       />
       <SliderControl
-        name="Grain"
+        name="Grain amount"
         unit="%"
         min={0}
         max={100}
@@ -140,6 +183,16 @@ function GradientEditor({ bg, up }: { bg: GradientBg; up: (patch: Partial<Projec
         showFill
         value={Math.round((bg.grain ?? 0) * 100)}
         onValueChange={(v) => patchBg({ grain: v / 100 })}
+      />
+      <SliderControl
+        name="Grain size"
+        unit="px"
+        min={1}
+        max={6}
+        step={1}
+        showFill
+        value={bg.grainSize ?? 1}
+        onValueChange={(value) => patchBg({ grainSize: value })}
       />
 
       <div className="flex flex-col gap-2">

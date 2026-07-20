@@ -75,7 +75,7 @@ function toMeta(doc: ProjectDoc): ProjectMeta {
 }
 
 function defaultBackdrop(): ProjectDoc {
-  const preset = GRADIENT_PRESETS.find((p) => p.id === 'pastel-mesh') ?? GRADIENT_PRESETS[0];
+  const preset = GRADIENT_PRESETS.find((candidate) => candidate.id === 'pastel-mesh') ?? GRADIENT_PRESETS[0];
   return {
     ...defaultProject('Untitled backdrop'),
     kind: 'backdrop',

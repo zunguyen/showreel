@@ -21,7 +21,8 @@ export function renderFrame(
   H: number,
 ) {
   ctx.save();
-  drawBackground(ctx, doc.background, W, H, tMs, doc.loop ? totalDurationMs(doc) : 0);
+  const durationMs = totalDurationMs(doc);
+  drawBackground(ctx, doc.background, W, H, tMs, doc.loop ? durationMs : 0);
 
   const items = doc.items;
   if (items.length === 0) {

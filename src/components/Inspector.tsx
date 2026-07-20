@@ -93,7 +93,7 @@ export function Inspector() {
 
   return (
     <aside className="panel-surface flex h-full min-h-0 flex-col">
-      <div className="border-b border-[color:var(--hairline)] px-4 py-3">
+      <div className="shrink-0 border-b border-[color:var(--hairline)] px-4 py-3">
         <p className="text-[11px] font-semibold uppercase tracking-[0.11em] text-[color:var(--muted-foreground)]">
           Inspector
         </p>
@@ -102,7 +102,7 @@ export function Inspector() {
         </p>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-5">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-5">
         <Accordion multiple defaultValue={['motion']} className="rounded-none">
           <AccordionItem value="motion">
             <AccordionTrigger className="py-4 text-xs font-semibold tracking-tight">

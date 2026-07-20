@@ -66,6 +66,11 @@ export type BackgroundDoc =
       angle: number;
       /** default 'linear' */
       gradientType?: GradientKind;
+      /** radial-gradient center, relative to the canvas; defaults to 0.5 */
+      radialX?: number;
+      radialY?: number;
+      /** radial-gradient reach relative to the default canvas radius; defaults to 1 */
+      radialSize?: number;
       stops: GradientStop[];
       glows?: GlowSpec[];
       /** 0..2 master multiplier on glow alphas; default 1 */
@@ -74,6 +79,8 @@ export type BackgroundDoc =
       softness?: number;
       /** 0..1 film grain amount; default 0 */
       grain?: number;
+      /** Film-grain pixel size at 1080-class resolution; default 1 */
+      grainSize?: number;
       /** default false */
       animate?: boolean;
       /** 0..1 drift speed; default 0.35 */
@@ -205,6 +212,74 @@ export const EASING_LABELS: Record<EasingId, string> = {
 
 export const RATIOS: Ratio[] = ['16:9', '9:16', '1:1', '4:3', '3:4'];
 
+type GradientBackground = Extract<BackgroundDoc, { type: 'gradient' }>;
+
+type LegacyArcSettings = {
+  colors?: string[];
+  horizon?: number;
+  width?: number;
+  softness?: number;
+  grainAmount?: number;
+  grainSize?: number;
+  backgroundColor?: string;
+  path?: string;
+};
+
+type LegacyGradientBackground = GradientBackground & {
+  style?: 'classic' | 'arc' | 'daylight';
+  arc?: LegacyArcSettings;
+  daylight?: LegacyArcSettings & { mode?: string };
+};
+
+const LEGACY_ARC_COLORS = ['#1EBEB8', '#1C2D9C', '#145A50'] as const;
+
+/** Normalizes provisional Arc/Daylight documents into an editable radial gradient. */
+export function migrateBackgroundDoc(background: BackgroundDoc): BackgroundDoc {
+  if (background.type !== 'gradient') return background;
+
+  const legacy = background as LegacyGradientBackground;
+  if (legacy.style === 'arc' || legacy.style === 'daylight') {
+    const source = legacy.style === 'arc' ? legacy.arc : legacy.daylight;
+    const { style: _style, arc: _arc, daylight: _daylight, ...classicFields } = legacy;
+    void _style;
+    void _arc;
+    void _daylight;
+    const glowColors = legacy.glows?.map((glow) => glow.color) ?? [];
+    const colors = [
+      source?.colors?.[0] ?? glowColors[0] ?? LEGACY_ARC_COLORS[0],
+      source?.colors?.[1] ?? glowColors[1] ?? LEGACY_ARC_COLORS[1],
+      source?.colors?.[2] ?? glowColors[2] ?? LEGACY_ARC_COLORS[2],
+    ];
+    return {
+      ...classicFields,
+      presetId: null,
+      angle: 180,
+      gradientType: 'radial',
+      radialX: 0.5,
+      radialY: source?.horizon ?? 0.05,
+      radialSize: Math.max(0.25, Math.min(2, source?.width ?? 1.5)),
+      stops: [
+        { color: colors[1], pos: 0 },
+        { color: colors[1], pos: 0.3 },
+        { color: colors[0], pos: 0.53 },
+        { color: colors[2], pos: 0.72 },
+        { color: source?.backgroundColor ?? '#ECF2F1', pos: 1 },
+      ],
+      softness: source?.softness ?? legacy.softness,
+      grain: source?.grainAmount ?? legacy.grain,
+      grainSize: source?.grainSize ?? legacy.grainSize ?? 1,
+      animate: legacy.animate ?? (source?.path !== undefined && source.path !== 'still'),
+      animSpeed: legacy.animSpeed ?? 0.35,
+    };
+  }
+
+  const { style: _style, arc: _arc, daylight: _daylight, ...classicFields } = legacy;
+  void _style;
+  void _arc;
+  void _daylight;
+  return classicFields;
+}
+
 /** Upgrades docs saved before the structured-background schema (bg: string) or the kind field. */
 export function migrateProject(raw: ProjectDoc): ProjectDoc {
   const legacy = raw as ProjectDoc & { bg?: unknown };
@@ -217,6 +292,7 @@ export function migrateProject(raw: ProjectDoc): ProjectDoc {
   }
   if (!doc.kind) doc = { ...doc, kind: 'showreel' };
   if (doc.motionIntensity === undefined) doc = { ...doc, motionIntensity: 0.65 };
+  doc = { ...doc, background: migrateBackgroundDoc(doc.background) };
   return doc;
 }
 

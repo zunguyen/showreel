@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ProjectDoc } from '../types';
 import { BASE_DIMS, exportDims, type ResClass } from '../render/ratio';
 import { renderFrame } from '../render/renderFrame';
-import { cssGradient } from '../render/gradients';
+import { cssGradient, isAnimatedBackground } from '../render/gradients';
 import { totalDurationMs } from '../render/timing';
 import { pickBitrate } from '../export/messages';
 import { ExportCancelled, startExport, webCodecsSupported, type ExportHandle } from '../export/exporter';
@@ -42,7 +42,7 @@ function downloadBlob(blob: Blob, name: string) {
 
 export function BackdropExportModal({ doc, onClose }: { doc: ProjectDoc; onClose: () => void }) {
   const bg = doc.background;
-  const animated = bg.type === 'gradient' && (bg.animate ?? false);
+  const animated = isAnimatedBackground(bg);
 
   const [format, setFormat] = useState<Format>('png');
   const [pngScale, setPngScale] = useState<1 | 2>(1);

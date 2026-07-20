@@ -69,6 +69,7 @@ export function GradientToolbar({
   type: GradientType;
 }): React.JSX.Element {
   const [angleDraft, setAngleDraft] = useState<string | null>(null);
+  const supportsAngle = type !== "radial";
   const angleBeforeEditRef = useRef(angle);
   const displayedAngle = angleDraft ?? String(angle);
 
@@ -103,7 +104,7 @@ export function GradientToolbar({
     <div
       className="grid min-w-0 gap-x-2.5 gap-y-3"
       data-slot="gradient-toolbar-grid"
-      style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}
+      style={{ gridTemplateColumns: supportsAngle ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)" }}
     >
       <Field className="h-fit min-w-0 gap-2" orientation="vertical">
         <ControlFieldLabel>{name}</ControlFieldLabel>
@@ -111,42 +112,44 @@ export function GradientToolbar({
           <GradientTypeSelect onTypeChange={onTypeChange} type={type} />
         </div>
       </Field>
-      <Field className="h-fit min-w-0 gap-2" orientation="vertical">
-        <ControlFieldLabel>Angle</ControlFieldLabel>
-        <div className="min-w-0 w-full">
-          <InputGroup>
-            <InputGroupInput
-              aria-label="Gradient angle"
-              autoComplete="off"
-              className="text-left font-mono"
-              inputMode="numeric"
-              name="gradient-angle"
-              onBlur={handleAngleBlur}
-              onChange={handleAngleChange}
-              onFocus={handleAngleFocus}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleAngleBlur();
-                  event.currentTarget.blur();
-                  return;
-                }
+      {supportsAngle && (
+        <Field className="h-fit min-w-0 gap-2" orientation="vertical">
+          <ControlFieldLabel>Angle</ControlFieldLabel>
+          <div className="min-w-0 w-full">
+            <InputGroup>
+              <InputGroupInput
+                aria-label="Gradient angle"
+                autoComplete="off"
+                className="text-left font-mono"
+                inputMode="numeric"
+                name="gradient-angle"
+                onBlur={handleAngleBlur}
+                onChange={handleAngleChange}
+                onFocus={handleAngleFocus}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleAngleBlur();
+                    event.currentTarget.blur();
+                    return;
+                  }
 
-                if (event.key === "Escape") {
-                  event.preventDefault();
-                  setAngleDraft(String(angle));
-                  event.currentTarget.blur();
-                }
-              }}
-              type="text"
-              value={displayedAngle}
-            />
-            <InputGroupAddon align="inline-end" className="pr-1.5 pl-0">
-              <InputGroupText>°</InputGroupText>
-            </InputGroupAddon>
-          </InputGroup>
-        </div>
-      </Field>
+                  if (event.key === "Escape") {
+                    event.preventDefault();
+                    setAngleDraft(String(angle));
+                    event.currentTarget.blur();
+                  }
+                }}
+                type="text"
+                value={displayedAngle}
+              />
+              <InputGroupAddon align="inline-end" className="pr-1.5 pl-0">
+                <InputGroupText>°</InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
+        </Field>
+      )}
     </div>
   );
 }

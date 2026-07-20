@@ -12,6 +12,8 @@ type Drag =
   | { type: 'orbSize'; index: number }
   | { type: 'angleEnd' }
   | { type: 'angleStart' }
+  | { type: 'radialCenter' }
+  | { type: 'radialSize' }
   | { type: 'stop'; index: number };
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
@@ -129,6 +131,16 @@ export function CanvasGizmos() {
           i === drag.index ? { ...gg, r: clamp(dist / Math.max(W, H), 0.1, 1) } : gg,
         ),
       });
+    } else if (drag.type === 'radialCenter') {
+      patchBg({
+        radialX: clamp(p.x / W, -0.2, 1.2),
+        radialY: clamp(p.y / H, -0.2, 1.2),
+      });
+    } else if (drag.type === 'radialSize') {
+      const cx = (bg.radialX ?? 0.5) * W;
+      const cy = (bg.radialY ?? 0.5) * H;
+      const radius = Math.hypot(p.x - cx, p.y - cy);
+      patchBg({ radialSize: clamp(radius / (Math.hypot(W, H) / 2), 0.25, 2) });
     } else if (drag.type === 'angleEnd' || drag.type === 'angleStart') {
       const dx = p.x - W / 2;
       const dy = p.y - H / 2;
@@ -155,6 +167,13 @@ export function CanvasGizmos() {
   });
 
   const line = kind === 'linear' ? gradientEndpoints(bg.angle, W, H) : null;
+  const radial =
+    kind === 'radial'
+      ? {
+          center: { x: (bg.radialX ?? 0.5) * W, y: (bg.radialY ?? 0.5) * H },
+          radius: (Math.hypot(W, H) / 2) * (bg.radialSize ?? 1),
+        }
+      : null;
   // Angular/diamond still honor the angle — give them a single rotation handle.
   const rotHandle =
     kind === 'angular' || kind === 'diamond'
@@ -256,6 +275,50 @@ export function CanvasGizmos() {
             stroke="rgba(0,0,0,0.45)"
             vectorEffect="non-scaling-stroke"
             {...handleProps({ type: 'angleEnd' })}
+          />
+        </>
+      )}
+
+      {radial && (
+        <>
+          <circle
+            cx={radial.center.x}
+            cy={radial.center.y}
+            r={radial.radius}
+            fill="none"
+            stroke="white"
+            strokeOpacity={0.4}
+            strokeDasharray="6 6"
+            strokeWidth={1}
+            vectorEffect="non-scaling-stroke"
+          />
+          <circle
+            cx={pullIntoRect(radial.center, center, safe).x}
+            cy={pullIntoRect(radial.center, center, safe).y}
+            r={hs}
+            fill="white"
+            stroke="rgba(0,0,0,0.45)"
+            strokeWidth={1.5}
+            vectorEffect="non-scaling-stroke"
+            {...handleProps({ type: 'radialCenter' })}
+          />
+          <circle
+            cx={pullIntoRect(
+              { x: radial.center.x + radial.radius, y: radial.center.y },
+              center,
+              safe,
+            ).x}
+            cy={pullIntoRect(
+              { x: radial.center.x + radial.radius, y: radial.center.y },
+              center,
+              safe,
+            ).y}
+            r={hs * 0.75}
+            fill="white"
+            stroke="rgba(0,0,0,0.45)"
+            vectorEffect="non-scaling-stroke"
+            {...handleProps({ type: 'radialSize' })}
+            style={{ pointerEvents: 'auto', cursor: 'ew-resize' }}
           />
         </>
       )}
