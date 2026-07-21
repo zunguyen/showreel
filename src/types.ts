@@ -71,6 +71,8 @@ export type BackgroundDoc =
       radialY?: number;
       /** radial-gradient reach relative to the default canvas radius; defaults to 1 */
       radialSize?: number;
+      /** ellipse roundness: vertical radius relative to radialSize; 1 = circle */
+      radialAspect?: number;
       stops: GradientStop[];
       glows?: GlowSpec[];
       /** 0..2 master multiplier on glow alphas; default 1 */

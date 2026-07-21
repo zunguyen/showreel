@@ -12,6 +12,7 @@ export interface GradientPreset {
   radialX?: number;
   radialY?: number;
   radialSize?: number;
+  radialAspect?: number;
   stops: GradientStop[];
   glows?: GlowSpec[];
   glowIntensity?: number;
@@ -388,6 +389,7 @@ export function presetToBackground(preset: GradientPreset): BackgroundDoc {
     radialX: preset.radialX,
     radialY: preset.radialY,
     radialSize: preset.radialSize,
+    radialAspect: preset.radialAspect,
     stops: preset.stops.map((s) => ({ ...s })),
     glows: preset.glows?.map((g) => ({ ...g })),
     glowIntensity: preset.glowIntensity,
@@ -484,14 +486,23 @@ function drawCore(ctx: Ctx2D, bg: GradientBg, W: number, H: number, tMs: number,
   const kind = bg.gradientType ?? 'linear';
   if (kind === 'diamond') {
     drawDiamond(ctx, bg, W, H);
+  } else if (kind === 'radial') {
+    const cx = (bg.radialX ?? 0.5) * W;
+    const cy = (bg.radialY ?? 0.5) * H;
+    const radius = Math.max(1, (Math.hypot(W, H) / 2) * (bg.radialSize ?? 1));
+    // Ellipse via a vertical scale around the center; aspect 1 is a circle.
+    const aspect = clamp(bg.radialAspect ?? 1, 0.2, 2.5);
+    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+    for (const s of bg.stops) grad.addColorStop(clamp(s.pos, 0, 1), rgba(s.color, s.alpha ?? 1));
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(1, aspect);
+    ctx.fillStyle = grad;
+    ctx.fillRect(-cx, -cy / aspect, W, H / aspect);
+    ctx.restore();
   } else {
     let grad: CanvasGradient;
-    if (kind === 'radial') {
-      const cx = (bg.radialX ?? 0.5) * W;
-      const cy = (bg.radialY ?? 0.5) * H;
-      const radius = Math.max(1, (Math.hypot(W, H) / 2) * (bg.radialSize ?? 1));
-      grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-    } else if (kind === 'angular') {
+    if (kind === 'angular') {
       // CSS conic convention: starts at 12 o'clock; canvas starts at 3 o'clock.
       grad = ctx.createConicGradient(((bg.angle - 90) * Math.PI) / 180, W / 2, H / 2);
     } else {
@@ -611,7 +622,10 @@ export function cssGradient(bg: BackgroundDoc): string {
       `radial-gradient(${shape} at ${glow.cx * 100}% ${glow.cy * 100}%, ${rgba(glow.color, glow.alpha * intensity)}${extent})`,
     );
   }
-  const stops = bg.stops
+  // Canvas addColorStop sorts internally; CSS clamps out-of-order stops into
+  // hard edges, so sort here to keep both renderings equivalent.
+  const stops = [...bg.stops]
+    .sort((a, b) => a.pos - b.pos)
     .map((s) => `${rgba(s.color, s.alpha ?? 1)} ${Math.round(clamp(s.pos, 0, 1) * 100)}%`)
     .join(', ');
   const kind = bg.gradientType ?? 'linear';
@@ -619,7 +633,10 @@ export function cssGradient(bg: BackgroundDoc): string {
     const x = Math.round((bg.radialX ?? 0.5) * 100);
     const y = Math.round((bg.radialY ?? 0.5) * 100);
     const size = Math.round((bg.radialSize ?? 1) * 70);
-    layers.push(`radial-gradient(circle ${size}% at ${x}% ${y}%, ${stops})`);
+    const ySize = Math.round(size * clamp(bg.radialAspect ?? 1, 0.2, 2.5));
+    // `circle <percentage>` is invalid CSS (drops the whole declaration); an
+    // ellipse is the closest valid stand-in for the canvas radius.
+    layers.push(`radial-gradient(ellipse ${size}% ${ySize}% at ${x}% ${y}%, ${stops})`);
   } else if (kind === 'angular') {
     layers.push(`conic-gradient(from ${bg.angle}deg at 50% 50%, ${stops})`);
   } else if (kind === 'diamond') {

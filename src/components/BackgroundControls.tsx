@@ -45,6 +45,9 @@ function GradientEditor({ bg, up }: { bg: GradientBg; up: (patch: Partial<Projec
   // Shared with the canvas gizmos so clicking an orb on the canvas selects it here too.
   const selectedOrb = useEditorUi((s) => s.selectedOrb);
   const setSelectedOrb = useEditorUi((s) => s.setSelectedOrb);
+  // Same idea for gradient stops: canvas and panel share one selection.
+  const selectedStop = useEditorUi((s) => s.selectedStop);
+  const setSelectedStop = useEditorUi((s) => s.setSelectedStop);
   const orbIdx = Math.min(selectedOrb, glows.length - 1);
   const orb = orbIdx >= 0 ? glows[orbIdx] : undefined;
 
@@ -94,6 +97,8 @@ function GradientEditor({ bg, up }: { bg: GradientBg; up: (patch: Partial<Projec
         name="Gradient"
         angle={bg.angle}
         gradientType={bg.gradientType ?? 'linear'}
+        selectedIndex={selectedStop}
+        onSelectedIndexChange={setSelectedStop}
         stops={toTcStops(bg.stops)}
         onValueChange={(v) =>
           patchBg({
@@ -137,6 +142,16 @@ function GradientEditor({ bg, up }: { bg: GradientBg; up: (patch: Partial<Projec
             showFill
             value={Math.round((bg.radialSize ?? 1) * 100)}
             onValueChange={(value) => patchBg({ radialSize: value / 100 })}
+          />
+          <SliderControl
+            name="Roundness"
+            unit="%"
+            min={25}
+            max={250}
+            step={1}
+            showFill
+            value={Math.round((bg.radialAspect ?? 1) * 100)}
+            onValueChange={(value) => patchBg({ radialAspect: value / 100 })}
           />
         </div>
       )}

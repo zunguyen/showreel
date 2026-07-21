@@ -60,11 +60,14 @@ export type GradientControlProps = {
   angle?: number;
   gradientType?: GradientType;
   name?: string;
+  onSelectedIndexChange?: (index: number | null) => void;
   onValueChange?: ControlValueChangeHandler<{
     angle: number;
     gradientType: GradientType;
     stops: readonly GradientStop[];
   }>;
+  /** Controlled stop selection; omit to let the control manage it internally. */
+  selectedIndex?: number | null;
   stops: readonly GradientStop[];
 };
 
@@ -72,11 +75,13 @@ type GradientStopsControllerOptions = {
   angle: number;
   gradientType: GradientType;
   name: string;
+  onSelectedIndexChange?: (index: number | null) => void;
   onValueChange?: ControlValueChangeHandler<{
     angle: number;
     gradientType: GradientType;
     stops: readonly GradientStop[];
   }>;
+  selectedIndex?: number | null;
   stops: readonly GradientStop[];
   trackRef: RefObject<HTMLDivElement | null>;
 };
@@ -233,10 +238,23 @@ function useGradientStopDragWindowEvents({
 }
 
 function useGradientStopsController(options: GradientStopsControllerOptions) {
-  const { stops, trackRef } = options;
+  const { onSelectedIndexChange, selectedIndex: selectedIndexProp, stops, trackRef } = options;
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const dragHistoryGroupRef = useRef<string | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
+  const [uncontrolledSelectedIndex, setUncontrolledSelectedIndex] = useState<number | null>(0);
+  const isSelectionControlled = typeof selectedIndexProp !== "undefined";
+  const selectedIndex = isSelectionControlled
+    ? selectedIndexProp
+    : uncontrolledSelectedIndex;
+  const setSelectedIndex: Dispatch<SetStateAction<number | null>> = (next) => {
+    const resolved = typeof next === "function" ? next(selectedIndex) : next;
+
+    if (!isSelectionControlled) {
+      setUncontrolledSelectedIndex(resolved);
+    }
+
+    onSelectedIndexChange?.(resolved);
+  };
   const activeStop =
     selectedIndex === null ? null : (stops[selectedIndex] ?? null);
   const actions = useGradientStopActions({
@@ -496,7 +514,9 @@ export function GradientControl({
   angle: angleProp,
   gradientType: gradientTypeProp,
   name = "Gradient",
+  onSelectedIndexChange,
   onValueChange,
+  selectedIndex,
   stops,
 }: GradientControlProps): React.JSX.Element {
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -555,7 +575,9 @@ export function GradientControl({
     angle,
     gradientType,
     name,
+    onSelectedIndexChange,
     onValueChange: handleValueChange,
+    selectedIndex,
     stops,
     trackRef,
   });
@@ -576,9 +598,11 @@ export function GradientControl({
           />
         </div>
         <div className="min-w-0">
+          {/* The track is always a left-to-right ramp so pin positions line up
+              with their colors; the canvas shows the real type/angle. */}
           <GradientStopsTrack
             draggingIndex={controller.draggingIndex}
-            gradient={getGradientBackground(gradientType, stops, angle)}
+            gradient={getGradientBackground("linear", stops, 90)}
             onDragEnd={() => controller.setDraggingIndex(null)}
             onPointerDown={controller.handleTrackPointerDown}
             onPointerMove={controller.handleTrackPointerMove}
